@@ -29,7 +29,7 @@ class AdamImport:
 
         if conv_type in ['pandas']:
             # take the csv file and open it as a pandas dataframe
-            from_csv = pd.read_csv(fpath, engine='python')
+            from_csv = pd.read_csv(fpath)
             # return a dataframe object
             return from_csv
 

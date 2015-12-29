@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         ai = AdamImport()
-        """
+
         ifile = 'F:\\adamexports\\adamcache\Incar\Data\INVEN.DBF'
         ofile = 'F:\\adamexports\csvfiles\INVEN.csv'
         out_type = 'csv'
@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
         ai.DBFConverter(ifile,ofile,out_type)
 
-        inv = pd.read_csv(ofile)
+        inv = pd.read_csv(ofile, engine='python')
         ext = inv.ONHAND * inv.COST
         ext = sum(ext)
         try:
@@ -27,14 +27,14 @@ class Command(BaseCommand):
             print "updated inventory value to %s" % ext
         except:
             print "There was an error updating invvalue"
-        """
+
         ifile = 'F:\\adamexports\\adamcache\Sicar\Data\\rofile.dbf'
         ofile = 'F:\\adamexports\csvfiles\\rofile.csv'
         out_type = 'csv'
 
         ai.DBFConverter(ifile,ofile,out_type)
 
-        rof = pd.read_csv(ofile)
+        rof = pd.read_csv(ofile, engine='python')
         cutoff_date = datetime.date.today() + datetime.timedelta(-30)
 
         ttlcount = rof.RO_NUM.count()
@@ -66,3 +66,4 @@ class Command(BaseCommand):
             print ttlcount, pcount, oldcount, custsum, intsum, warsum, extsum
         except:
             print "There was an error updating Service Ro Values"
+        
