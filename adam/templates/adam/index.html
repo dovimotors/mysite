@@ -1,0 +1,18 @@
+{% if path_list %}
+    <ul>
+        {% for obj in path_list %}
+        <li>
+            <a href="/adam/{{ obj.id }}/">
+                Preview Data
+            </a>
+             |
+            <a href="/adam/export/{{ obj.id }}/">
+                Export
+            </a>
+             | {{ obj.DBFPath }}
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No Files Available.</p>
+{% endif %}
