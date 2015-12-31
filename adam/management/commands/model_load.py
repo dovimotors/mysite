@@ -66,4 +66,3 @@ class Command(BaseCommand):
             print ttlcount, pcount, oldcount, custsum, intsum, warsum, extsum
         except:
             print "There was an error updating Service Ro Values"
-        
