@@ -13,5 +13,14 @@ class ADAMFiles(models.Model):
         recursive=True,
     )
 
+class SGFields(models.Model):
+    sgusername = models.TextField(
+        max_length=50
+    )
+
+    sgpassword = models.TextField(
+        max_length=50
+    )
+
 
 
