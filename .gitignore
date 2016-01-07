@@ -32,6 +32,8 @@ Include/
 db.sqlite3
 output.csv
 conf/
+DailyStatement.csv
+log.txt
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
