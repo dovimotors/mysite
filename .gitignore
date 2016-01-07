@@ -32,6 +32,7 @@ Include/
 db.sqlite3
 output.csv
 conf/
+Django-1.8.7-py2.7.egg/
 DailyStatement.csv
 log.txt
 
