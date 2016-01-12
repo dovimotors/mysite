@@ -125,15 +125,18 @@ class Command(BaseCommand):
         merged_inner_trunk = merged_inner[pd.isnull(merged_inner.VIN1)]
         merged_inner_trunk = merged_inner_trunk[pd.notnull(merged_inner.Interest)]
 
-        #complete the email sending tasks
-        s = 'Floored Vehicles not yet Arrived.  Last Downloaded %s' % last_modified
-        html = merged_inner_trunk.to_html()
-        try:
-            m = send_email(html,s)
-            logging.info(m)
-        except Exception, e:
-            logging.warning(m)
-            logging.warning(e)
+        if merged_inner_trunk.empty:
+            logging.info('no data.  email not sent')
+        else:
+            #complete the email sending tasks
+            s = 'Floored Vehicles not yet Arrived.  Last Downloaded %s' % last_modified
+            html = merged_inner_trunk.to_html()
+            try:
+                m = send_email(html,s)
+                logging.info(m)
+            except Exception, e:
+                logging.warning(m)
+                logging.warning(e)
 
         logging.info('Completed floorplan notification process')
 
