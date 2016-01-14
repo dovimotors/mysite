@@ -21,5 +21,5 @@ def service(request):
 
 def parts_detail(request):
     inv = pa_Get_Parts_Count('detail',-29,-45)
-    inv.to_html
-    return HttpResponse(inv)
+    html = inv.to_html()
+    return HttpResponse(html)
