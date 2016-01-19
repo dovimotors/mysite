@@ -27,8 +27,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-ADAM_PATH = 'f:\\adamexports\\adamcache\\'
+DJANGO_ENV = os.environ['DJANGO_ENV']
 
+if DJANGO_ENV == 'dev':
+
+    ADAM_PATH = 'f:\\adamexports\\adamcache\\'
+
+else:
+    ADAM_PATH = 'c:\data\\adamexports\\adamcache\\'
 
 # Application definition
 
