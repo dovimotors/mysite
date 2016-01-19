@@ -1,0 +1,42 @@
+{% load staticfiles %}
+<html>
+  <head>
+  </head>
+  <body>
+    <div class="container">
+      <header class="navbar navbar-top" role="banner">
+        <a href="/" class="navbar-brand">BaBbLeR</a>
+        <div class="clearfix"></div>
+        <ul class="nav nav-justified">
+          <li class="active">Home</li>
+          <li><a href="#">Menu item 1</a></li>
+          <li><a href="#">Menu item 2</a></li>
+          <li><a href="#">Menu item 3</a></li>
+          <li><a href="#">Menu item 4</a></li>
+        </ul>
+      </header>
+      <div class="clearfix"></div>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="nav-right">
+            <img src="{% static 'images/me.png'%}" class="pull-left profile-pic"/>
+            <p>Hello,<br/>here are a few slices of my life.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse non elit nec tortor aliquet condimentum. Suspendisse euismod nisl orci, sit amet posuere justo tristique ut. Sed porttitor, nisi a imperdiet commodo, neque ante bibendum mi, nec suscipit dolor est a lectus. Donec accumsan sodales rhoncus. Duis congue vehicula metus, nec tempus tellus gravida sed. Praesent feugiat volutpat mauris quis scelerisque. Cras feugiat, lorem eget volutpat consectetur, lorem justo consequat orci, sed tincidunt nisl orci accumsan ante. Ut eu laoreet massa. Sed commodo accumsan ornare. Etiam egestas mollis euismod. Fusce vehicula mauris in est pretium, ac auctor lectus pellentesque. Aliquam et leo rhoncus elit sagittis faucibus. Quisque sit amet neque venenatis lorem placerat sodales sed eu metus. Nullam ut felis id urna iaculis consectetur vitae nec tortor. Mauris bibendum, sem mattis malesuada pretium, lectus libero vestibulum est, pulvinar fringilla purus eros a orci.</p>
+          </div>
+        </div>
+        <div class="col-md-9">
+          <h1>My moods:</h1>
+          {% for object in object_list %}
+            <div class="status">
+              <span>{{ object.status }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="clearfix"></div>
+      <footer>
+        <p class="pull-right">Usual footer blah</p>
+      </footer>
+    </div>
+  </body>
+</html>
