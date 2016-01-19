@@ -3,6 +3,7 @@ from dbftopandas import AdamImport
 import pandas as pd
 import datetime, time
 import os
+from mysite.settings import ADAM_PATH, ADAM_EXPORT_PATH
 
 # Create your models here.
 
@@ -70,8 +71,8 @@ def pa_Get_Parts_Count(type, start_days, end_days):
     """
 
     ai = AdamImport()
-    ifile = 'F:\\adamexports\\adamcache\Incar\Data\INVEN.DBF'
-    ofile = 'F:\\adamexports\csvfiles\INVEN.csv'
+    ifile = ''.join([ADAM_PATH,'\Incar\Data\INVEN.DBF'])
+    ofile = ''.join([ADAM_EXPORT_PATH,'INVEN.csv'])
     out_type = 'csv'
 
     ai.DBFConverter(ifile,ofile,out_type)
