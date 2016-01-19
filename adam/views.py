@@ -6,6 +6,11 @@ import os
 
 
 def index(request):
+
+    context = {}
+    return render(request, 'mysite/index.html', context)
+
+def list(request):
     # main view for /adam/ app.  returns all paths in the database with links
     path_list = ADAMFiles.objects.all()
     context = {'path_list': path_list}
