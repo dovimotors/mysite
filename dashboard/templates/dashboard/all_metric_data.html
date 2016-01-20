@@ -1,26 +1,28 @@
 {% extends 'mysite/base.html' %}
 {% block content %}
 <h2>Daily Metrics Report</h2>
-    <table border="1">
-    <tr>
-        <td>ID</td>
-        <td>Stat Date</td>
-        <td>Parts Inv Value</td>
-        <td>Parts 30-45 Days</td>
-        <td>Parts 60-65 Days</td>
-        <td>Service RO Count</td>
-        <td>Service Old RO Ct</td>
-    </tr>
+    <table class="pure-table pure-table-horizontal">
+    <thead>
+        <tr>
+            <td>ID</td>
+            <td>Stat Date</td>
+            <td>Parts Inv Value</td>
+            <td>Parts 30-45 Days</td>
+            <td>Parts 60-65 Days</td>
+            <td>Service RO Count</td>
+            <td>Service Old RO Ct</td>
+        </tr>
+    </thead>
     {% for metric in daily_metrics %}
-    <tr>
-        <td>{{ metric.id }}</td>
-        <td>{{ metric.statdate }}</td>
-        <td>{{ metric.pa_invvalue }}</td>
-        <td>{{ metric.pa_count30to45 }}</td>
-        <td>{{ metric.pa_count60to65 }}</td>
-        <td>{{ metric.sv_ro_count }}</td>
-        <td>{{ metric.sv_old_ro_count }}</td>
-    </tr>
+        <tr>
+            <td>{{ metric.id }}</td>
+            <td>{{ metric.statdate }}</td>
+            <td>{{ metric.pa_invvalue }}</td>
+            <td>{{ metric.pa_count30to45 }}</td>
+            <td>{{ metric.pa_count60to65 }}</td>
+            <td>{{ metric.sv_ro_count }}</td>
+            <td>{{ metric.sv_old_ro_count }}</td>
+        </tr>
     {% endfor %}
     </table>
 <h2>Detailed Reports</h2>
