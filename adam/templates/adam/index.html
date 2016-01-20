@@ -1,3 +1,6 @@
+{% extends 'mysite/base.html' %}
+{% block content %}
+<h2>Available files for Export</h2>
 {% if path_list %}
     <ul>
         {% for obj in path_list %}
@@ -16,3 +19,4 @@
 {% else %}
     <p>No Files Available.</p>
 {% endif %}
+{% endblock %}

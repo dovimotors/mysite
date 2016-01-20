@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>All Metric Data</title>
-</head>
-<body>
+{% extends 'mysite/base.html' %}
+{% block content %}
 <h2>Daily Metrics Report</h2>
     <table border="1">
     <tr>
@@ -33,7 +28,4 @@
         <li><a href="../parts_detail/29/45">Parts on hand 30-45 days old</a></li>
         <li><a href="../parts_detail/60/65">Parts on hand 60-65 days old</a></li>
     </ul>
-
-
-</body>
-</html>
+{% endblock %}
