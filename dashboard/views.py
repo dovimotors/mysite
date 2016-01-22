@@ -27,6 +27,6 @@ def parts_detail(request,start_days,end_days,field):
     return HttpResponse(html)
 
 def all_metrics(request):
-    metrics = DailyMetrics.objects.all()
+    metrics = DailyMetrics.objects.all()[:45]
     context = {'daily_metrics': metrics}
     return render(request, 'dashboard/all_metric_data.html',context)
