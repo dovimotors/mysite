@@ -6,8 +6,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         invvalue = pa_Get_Inventory_Value()
-        inv30to45 = pa_Get_Parts_Count('total',-29,-45)
-        inv60to65 = pa_Get_Parts_Count('total',-59,-65)
+        inv30to45 = pa_Get_Parts_Count('total',-29,-45,'DATEPURC')
+        inv60to65 = pa_Get_Parts_Count('total',-59,-65,'DATEPURC')
         rocount = sv_Get_RO_Count(type='totalcount')
         oldcount = sv_Get_RO_Count(type='oldcount')
         dm = DailyMetrics(

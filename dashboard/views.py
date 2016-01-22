@@ -19,10 +19,10 @@ def service(request):
     html = ro_data.to_html()
     return HttpResponse(html)
 
-def parts_detail(request,start_days,end_days):
+def parts_detail(request,start_days,end_days,field):
     invert_start = int(start_days)*-1
     invert_end = int(end_days)*-1
-    inv = pa_Get_Parts_Count('detail',invert_start,invert_end)
+    inv = pa_Get_Parts_Count('detail',invert_start,invert_end,field)
     html = inv.to_html()
     return HttpResponse(html)
 

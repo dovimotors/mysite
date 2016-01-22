@@ -1,6 +1,14 @@
 {% extends 'mysite/base.html' %}
 {% block content %}
-<h2>Daily Metrics Report</h2>
+<h2 class="pure-menu-heading">Detailed Parts Reports</h2>
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item"><a href="../parts_detail/29/45/DATEPURC/" class="pure-menu-link">Parts on hand 30-45 days old</a></li>
+        <li class="pure-menu-item"><a href="../parts_detail/60/65/DATEPURC/" class="pure-menu-link">Parts on hand 60-65 days old</a></li>
+        <li class="pure-menu-item"><a href="../parts_detail/365/395/DATEPURC/" class="pure-menu-link">Over 12-15 Months Old By Date Purchased</a></li>
+        <li class="pure-menu-item"><a href="../parts_detail/365/395/DATESOLD/" class="pure-menu-link">Over 12-15 Months Old By Date Sold</a></li>
+    </ul>
+
+<h2 class="pure-menu-heading">Daily Metrics Report</h2>
     <table class="pure-table pure-table-horizontal">
     <thead>
         <tr>
@@ -25,9 +33,5 @@
         </tr>
     {% endfor %}
     </table>
-<h2>Detailed Reports</h2>
-    <ul>
-        <li><a href="../parts_detail/29/45">Parts on hand 30-45 days old</a></li>
-        <li><a href="../parts_detail/60/65">Parts on hand 60-65 days old</a></li>
-    </ul>
+
 {% endblock %}

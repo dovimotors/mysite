@@ -60,11 +60,12 @@ def pa_Get_Inventory_Value():
     ext = sum(ext)
     return ext
 
-def pa_Get_Parts_Count(type, start_days, end_days):
+def pa_Get_Parts_Count(type, start_days, end_days, field):
     """
     type takes either total or detail
     total retuns in int, sum of ONHAND
     detail return a dataframe obj with detailed records
+    field can take DATEPURC or DATESOLD
 
     start_days should be a negative integer
     end_days should be a negative integer greater than start days
@@ -82,10 +83,12 @@ def pa_Get_Parts_Count(type, start_days, end_days):
     startdate = datetime.date.today() + datetime.timedelta(start_days)
     enddate = datetime.date.today() + datetime.timedelta(end_days)
 
+    fdDate = str(field)
+
     inv = inv[inv['ONHAND']>0]
     inv = inv[inv['COST']>15]
-    inv['DATEPURC'] = pd.to_datetime(inv['DATEPURC'])
-    inv = inv[(inv['DATEPURC'] < pd.to_datetime(startdate)) & (inv['DATEPURC'] > pd.to_datetime(enddate))]
+    inv[fdDate] = pd.to_datetime(inv[fdDate])
+    inv = inv[(inv[fdDate] < pd.to_datetime(startdate)) & (inv[fdDate] > pd.to_datetime(enddate))]
     inv['ext'] = inv['ONHAND']*inv['COST']
 
     if type == "total":
@@ -93,6 +96,7 @@ def pa_Get_Parts_Count(type, start_days, end_days):
         return inv_sum
     elif type == "detail":
         inv_detail = inv[['PREFIX','PARTNO','SUFFIX','DESC','ONHAND','DATEPURC','DATESOLD','COST','ext', 'LOCATION']]
+        inv_detail = inv_detail.sort(fdDate)
         return inv_detail
 
 
