@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
             return (status,msg)
 
-        part_list =  pa_Get_Parts_Count('detail',-29,-45)
+        part_list =  pa_Get_Parts_Count('detail',-29,-45,'DATEPURC')
         html = part_list.to_html()
         subject = "Parts 30 to 45 days old"
         send_email(html,subject)

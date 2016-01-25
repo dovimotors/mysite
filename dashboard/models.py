@@ -7,6 +7,19 @@ from mysite.settings import ADAM_PATH, ADAM_EXPORT_PATH
 
 # Create your models here.
 
+#funtion to see if the file has been refreshed within 1 day
+def need_refresh(file_name):
+    #check to see if the file has ever been created.
+    if os.path.exists(file_name):
+        last_modified = str(datetime.datetime.strptime(time.ctime((os.path.getmtime(file_name))),'%a %b %d %H:%M:%S %Y'))
+    else:
+        #set the times if the file doesn't exists to ensure the update runs
+        last_modified = datetime.datetime.strftime((datetime.datetime.now() + datetime.timedelta(0,-14401)),'%Y-%m-%d %H:%M:%S')
+    cut_off = datetime.datetime.strftime((datetime.datetime.now() + datetime.timedelta(0,-14400)),'%Y-%m-%d %H:%M:%S')
+    if last_modified < cut_off:
+        return True
+    else:
+        return False
 
 class PartsInv(models.Model):
 
@@ -53,7 +66,8 @@ def pa_Get_Inventory_Value():
     ofile = 'F:\\adamexports\csvfiles\INVEN.csv'
     out_type = 'csv'
 
-    ai.DBFConverter(ifile,ofile,out_type)
+    if need_refresh(ofile):
+        ai.DBFConverter(ifile,ofile,out_type)
 
     inv = pd.read_csv(ofile, engine='python')
     ext = inv.ONHAND * inv.COST
@@ -76,7 +90,8 @@ def pa_Get_Parts_Count(type, start_days, end_days, field):
     ofile = ''.join([ADAM_EXPORT_PATH,'INVEN.csv'])
     out_type = 'csv'
 
-    ai.DBFConverter(ifile,ofile,out_type)
+    if need_refresh(ofile):
+        ai.DBFConverter(ifile,ofile,out_type)
 
 
     inv = pd.read_csv(ofile, engine='python')
@@ -114,7 +129,8 @@ def sv_Get_RO_Count(type):
     ofile = 'F:\\adamexports\csvfiles\\rofile.csv'
     out_type = 'csv'
 
-    ai.DBFConverter(ifile,ofile,out_type)
+    if need_refresh(ofile):
+        ai.DBFConverter(ifile,ofile,out_type)
 
     rof = pd.read_csv(ofile, engine='python')
     cutoff_date = datetime.date.today() + datetime.timedelta(-30)
