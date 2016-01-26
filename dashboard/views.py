@@ -19,6 +19,10 @@ def service(request):
     html = ro_data.to_html()
     return HttpResponse(html)
 
+def parts_reports(request):
+    context = {}
+    return render(request, 'dashboard/parts_reports.html', context)
+
 def parts_detail(request,start_days,end_days,field):
     invert_start = int(start_days)*-1
     invert_end = int(end_days)*-1
