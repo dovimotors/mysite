@@ -3,9 +3,9 @@ from .models import PartsInv, ServiceRO, pa_Get_Parts_Count, DailyMetrics
 import pandas as pd
 from dbftopandas import AdamImport
 import datetime
-# Create your views here.
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def index(request):
     parts = PartsInv.objects.all()
     service = ServiceRO.objects.all()
@@ -14,6 +14,7 @@ def index(request):
                }
     return render(request, 'dashboard/index.html', context)
 
+@login_required
 def service(request):
     ro_data = pd.DataFrame(list(ServiceRO.objects.all().values()))
     html = ro_data.to_html()
@@ -30,6 +31,7 @@ def parts_detail(request,start_days,end_days,field):
     html = inv.to_html()
     return HttpResponse(html)
 
+@login_required
 def all_metrics(request):
     metrics = DailyMetrics.objects.all()[:45]
     context = {'daily_metrics': metrics}

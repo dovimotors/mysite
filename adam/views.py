@@ -3,6 +3,8 @@ from django.http import HttpResponse, StreamingHttpResponse
 from dbftopandas import AdamImport
 from .models import ADAMFiles
 import os
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout as lgout
 
 
 def index(request):
@@ -10,6 +12,7 @@ def index(request):
     context = {}
     return render(request, 'mysite/index.html', context)
 
+@login_required
 def list(request):
     # main view for /adam/ app.  returns all paths in the database with links
     path_list = ADAMFiles.objects.all()
@@ -17,6 +20,7 @@ def list(request):
     return render(request, 'adam/index.html', context)
 
 
+@login_required
 def detail(request, path_id):
     # view for the adam/<id> page returns an html rendered dataframe
     # create the object to convert DBF to pandas
@@ -40,7 +44,7 @@ def detail(request, path_id):
     s_trunk = s.to_html()
     return HttpResponse(s_trunk)
 
-
+@login_required
 def export(request, path_id):
     # view to convert a DBF file on the fly and export it to a CSV
     ai = AdamImport()
@@ -58,9 +62,14 @@ def export(request, path_id):
     f.close()
     return response
 
+@login_required
 def test(request, path_id):
     p = ADAMFiles.objects.get(id=path_id)
     p = str(p)
     fp = os.path.basename(p)
     fp = fp.replace('.dbf','')
     return HttpResponse(fp)
+
+def logout(request):
+    lgout(request)
+    return render(request,'registration/logout.html')
