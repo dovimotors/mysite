@@ -2,12 +2,15 @@ from django.core.management.base import BaseCommand
 import sendgrid
 from dashboard.models import pa_Get_Parts_Count
 from adam.models import SGFields
+from django.template.loader import render_to_string
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument('email_type')
 
     def handle(self, *args, **options):
 
-        def send_email(htmlbody, subject):
+        def send_email(htmlbody, subject, email_list):
             # using SendGrid's Python Library - https://github.com/sendgrid/sendgrid-python
 
             x = SGFields.objects.get(id=1)
@@ -29,7 +32,7 @@ class Command(BaseCommand):
             message.set_from_name("Dovi Motors Inc.")
             """
 
-            message.add_to(["jesse@dovimotors.com","gordy@dovimotors.com"])
+            message.add_to(email_list)
             message.set_from_name("Dovi Motors Inc.")
             message.set_from("admin@dovimotors.com")
             message.set_subject(subject)
@@ -39,7 +42,23 @@ class Command(BaseCommand):
 
             return (status,msg)
 
-        part_list =  pa_Get_Parts_Count('detail',-29,-45,'DATEPURC')
-        html = part_list.to_html()
-        subject = "Parts 30 to 45 days old"
-        send_email(html,subject)
+
+        email_type = options['email_type']
+
+        if email_type == "parts_30to45":
+            part_list =  pa_Get_Parts_Count('detail',-29,-45,'DATEPURC')
+
+            html = part_list.to_html()
+            subject = "Parts 30 to 45 days old"
+            email_addresses = ["jesse@dovimotors.com","gordy@dovimotors.com","robin@dovimotors.com"]
+            send_email(html,subject,email_addresses)
+
+        elif email_type == "parts_monthly":
+            context = {
+                'headline':'Monthly Aged Parts Reports',
+                'body':'This is a reminder to run the monthly aged parts inventory reports.'
+            }
+            html = render_to_string('mysite/email_notification.html',context)
+            subject = "Time to run the monthly aged parts reports"
+            email_addresses = ["jesse@dovimotors.com","gordy@dovimotors.com","robin@dovimotors.com","luke@dovimotors.com"]
+            send_email(html,subject,email_addresses)
