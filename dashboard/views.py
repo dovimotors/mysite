@@ -24,10 +24,10 @@ def parts_reports(request):
     context = {}
     return render(request, 'dashboard/parts_reports.html', context)
 
-def parts_detail(request,start_days,end_days,field):
+def parts_detail(request,start_days,end_days,field,cost=15):
     invert_start = int(start_days)*-1
     invert_end = int(end_days)*-1
-    inv = pa_Get_Parts_Count('detail',invert_start,invert_end,field)
+    inv = pa_Get_Parts_Count('detail',invert_start,invert_end,field,cost)
     html = inv.to_html()
     return HttpResponse(html)
 
