@@ -76,7 +76,7 @@ def pa_Get_Inventory_Value():
 
 def pa_Get_Parts_Count(type, start_days, end_days, field, cost=15):
     """
-    type takes either total or detail
+    type takes either total, detail, detail_stock (this returns detail including stock parts)
     total retuns in int, sum of ONHAND
     detail return a dataframe obj with detailed records
     field can take DATEPURC or DATESOLD
@@ -93,35 +93,50 @@ def pa_Get_Parts_Count(type, start_days, end_days, field, cost=15):
     stock.columns = ['Ford','Alternate','QOH','Days1','Days2']
     stock = stock[['Alternate']].dropna()
 
+    #pull the latest parts inventory from ADAM
     ai = AdamImport()
     ifile = ''.join([ADAM_PATH,'\Incar\Data\INVEN.DBF'])
     ofile = ''.join([ADAM_EXPORT_PATH,'INVEN.csv'])
     out_type = 'csv'
 
+    #refresh the data in necessary
     if need_refresh(ofile):
         ai.DBFConverter(ifile,ofile,out_type)
 
 
+    #read the CSV in a dataframe and convert the dates
     inv = pd.read_csv(ofile, engine='python')
     startdate = datetime.date.today() + datetime.timedelta(start_days)
     enddate = datetime.date.today() + datetime.timedelta(end_days)
 
+    #initialize the parameters from the query string
     fdDate = str(field)
     intCost = int(cost)
 
+    #filter out the data
     inv = inv[inv['ONHAND']>0]
     inv = inv[inv['COST']>intCost]
     inv[fdDate] = pd.to_datetime(inv[fdDate])
     inv = inv[(inv[fdDate] < pd.to_datetime(startdate)) & (inv[fdDate] > pd.to_datetime(enddate))]
     inv['ext'] = inv['ONHAND']*inv['COST']
 
+    #if the type is total just give a total parts value
     if type == "total":
         inv_sum = inv['ONHAND'].sum()
         return inv_sum
+    #if the type is detail prepare the data for detailed export
     elif type == "detail":
+        #create a full part number field to filter on
         inv['FULLPN'] = inv['PREFIX'] + inv['PARTNO'] + inv['SUFFIX']
+        #create the filter to exclude stock parts
         invx = inv['FULLPN'].isin(stock['Alternate'])
+        #create a new inv dataframe with out the stock parts
         inv = inv[~invx]
+        inv_detail = inv[['PREFIX','PARTNO','SUFFIX','DESC','ONHAND','DATEPURC','DATESOLD','COST','ext', 'LOCATION']]
+        inv_detail = inv_detail.sort(fdDate)
+        return inv_detail
+    elif type == "detail_stock":
+        #in this case, return everything including stock parts
         inv_detail = inv[['PREFIX','PARTNO','SUFFIX','DESC','ONHAND','DATEPURC','DATESOLD','COST','ext', 'LOCATION']]
         inv_detail = inv_detail.sort(fdDate)
         return inv_detail

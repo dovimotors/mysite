@@ -3,6 +3,9 @@ import sendgrid
 from dashboard.models import pa_Get_Parts_Count
 from adam.models import SGFields
 from django.template.loader import render_to_string
+import datetime, time
+import os
+from mysite.settings import ADAM_PATH, ADAM_EXPORT_PATH
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -54,9 +57,13 @@ class Command(BaseCommand):
             send_email(html,subject,email_addresses)
 
         elif email_type == "parts_monthly":
+            file_path = ''.join([ADAM_EXPORT_PATH,'Extract.csv'])
+            last_modified = time.ctime(os.path.getmtime(file_path))
+            modified_message = 'The stock parts file was last updated %s' % last_modified
             context = {
                 'headline':'Monthly Aged Parts Reports',
-                'body':'This is a reminder to run the monthly aged parts inventory reports.'
+                'body':'This is a reminder to run the monthly aged parts inventory reports.',
+                'last_modified': last_modified
             }
             html = render_to_string('mysite/email_notification.html',context)
             subject = "Time to run the monthly aged parts reports"
