@@ -86,6 +86,13 @@ def pa_Get_Parts_Count(type, start_days, end_days, field, cost=15):
     end_days should be a negative integer greater than start days
     """
 
+    #parts needed to be in stock for DPA
+    stock_file = ''.join([ADAM_EXPORT_PATH,'Extract.csv'])
+
+    stock = pd.read_csv(stock_file)
+    stock.columns = ['Ford','Alternate','QOH','Days1','Days2']
+    stock = stock[['Alternate']].dropna()
+
     ai = AdamImport()
     ifile = ''.join([ADAM_PATH,'\Incar\Data\INVEN.DBF'])
     ofile = ''.join([ADAM_EXPORT_PATH,'INVEN.csv'])
@@ -112,6 +119,9 @@ def pa_Get_Parts_Count(type, start_days, end_days, field, cost=15):
         inv_sum = inv['ONHAND'].sum()
         return inv_sum
     elif type == "detail":
+        inv['FULLPN'] = inv['PREFIX'] + inv['PARTNO'] + inv['SUFFIX']
+        invx = inv['FULLPN'].isin(stock['Alternate'])
+        inv = inv[~invx]
         inv_detail = inv[['PREFIX','PARTNO','SUFFIX','DESC','ONHAND','DATEPURC','DATESOLD','COST','ext', 'LOCATION']]
         inv_detail = inv_detail.sort(fdDate)
         return inv_detail
