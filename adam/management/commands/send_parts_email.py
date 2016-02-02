@@ -69,3 +69,11 @@ class Command(BaseCommand):
             subject = "Time to run the monthly aged parts reports"
             email_addresses = ["jesse@dovimotors.com","gordy@dovimotors.com","robin@dovimotors.com","luke@dovimotors.com"]
             send_email(html,subject,email_addresses)
+
+        elif email_type == "parts_45to50":
+            part_list =  pa_Get_Parts_Count('detail',-45,-50,'DATEPURC')
+
+            html = part_list.to_html()
+            subject = "Get rid of these pronto!  Parts 45 to 50 days old"
+            email_addresses = ["jesse@dovimotors.com","gordy@dovimotors.com","robin@dovimotors.com"]
+            send_email(html,subject,email_addresses)
