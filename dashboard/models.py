@@ -74,13 +74,13 @@ def pa_Get_Inventory_Value():
     ext = sum(ext)
     return ext
 
-def pa_Get_Parts_Count(type, start_days, end_days, field, cost=15):
+def pa_Get_Parts_Count(type, start_days, end_days, field, cost=1500):
     """
     type takes either total, detail, detail_stock (this returns detail including stock parts)
     total retuns in int, sum of ONHAND
     detail return a dataframe obj with detailed records
     field can take DATEPURC or DATESOLD
-    cost should be expressed as an integer
+    cost should be expressed as an integer in cents
 
     start_days should be a negative integer
     end_days should be a negative integer greater than start days
@@ -111,7 +111,8 @@ def pa_Get_Parts_Count(type, start_days, end_days, field, cost=15):
 
     #initialize the parameters from the query string
     fdDate = str(field)
-    intCost = int(cost)
+    #change cost to an integer and multiply by 100 to make it in dollars
+    intCost = int(cost)/100
 
     #filter out the data
     inv = inv[inv['ONHAND']>0]
