@@ -1,6 +1,7 @@
 from django.db import models
 from dbftopandas import AdamImport
 import pandas as pd
+import numpy as np
 import datetime, time
 import os
 from mysite.settings import ADAM_PATH, ADAM_EXPORT_PATH
@@ -171,3 +172,93 @@ def sv_Get_RO_Count(type):
         return ttlcount
     elif type == 'oldcount':
         return oldcount
+
+def get_daily_service_summary(type,pmttyp,start_date, end_date):
+    """
+    type currently takes sum, detail, or count
+    pmttype takes C, W, I, E or 'all' for everything
+    """
+    arrofile = ''.join([ADAM_EXPORT_PATH,'arcrof.csv'])
+    rofile = ''.join([ADAM_EXPORT_PATH,'rofile.csv'])
+    arcomplain = ''.join([ADAM_EXPORT_PATH,'arcomp.csv'])
+    complain = ''.join([ADAM_EXPORT_PATH, 'complain.csv'])
+    rof_cols = ['RO_NUM','DATE_OUT']
+    comp_cols = ['RONUM','PAYMNTTYP','LSALES_AMT','LCOST_AMT','PSALES_AMT','PCOST_AMT','MSALES_AMT','MCOST_AMT']
+    full_cols = ['RONUM','DATE_OUT','PAYMNTTYP','LSALES_AMT','LCOST_AMT','PSALES_AMT','PCOST_AMT','MSALES_AMT','MCOST_AMT']
+
+
+    rof = pd.read_csv(rofile, usecols=rof_cols)
+    rof['DATE_OUT'] = pd.to_datetime(rof['DATE_OUT'])
+    rof = rof[rof['DATE_OUT']>= start_date]
+    rof = rof[rof['DATE_OUT']<= end_date]
+
+
+    arrof = pd.read_csv(arrofile, usecols=rof_cols)
+    arrof['DATE_OUT'] = pd.to_datetime(arrof['DATE_OUT'])
+    arrof = arrof[arrof['DATE_OUT']>= start_date]
+    arrof = arrof[arrof['DATE_OUT']<= end_date]
+
+    rof = rof.append(arrof)
+    #rof = arrof
+
+
+    comp = pd.read_csv(complain, usecols=comp_cols)
+    arcomp = pd.read_csv(arcomplain, usecols=comp_cols)
+    if pmttyp != 'all':
+        comp = comp[comp['PAYMNTTYP'].str.startswith(pmttyp, na=False)]
+        arcomp = arcomp[arcomp['PAYMNTTYP'].str.startswith(pmttyp, na=False)]
+
+
+    comp = comp.append(arcomp)
+    #comp = arcomp
+
+
+    full_set = pd.merge(left=rof, right=comp, how='inner', left_on='RO_NUM', right_on='RONUM')
+    full_set = full_set[full_cols]
+    full_set['lab_gross'] = full_set['LSALES_AMT']-full_set['LCOST_AMT']
+    full_set['prt_gross'] = full_set['PSALES_AMT']+full_set['MSALES_AMT']-full_set['PCOST_AMT']-full_set['MCOST_AMT']
+    full_set['ttl_gross'] = full_set['prt_gross']+full_set['lab_gross']
+    full_set['ttl_sls'] = full_set['LSALES_AMT']+full_set['PSALES_AMT']+full_set['MSALES_AMT']
+    full_set = full_set[full_set['ttl_gross']<10000]
+    full_set = full_set[full_set['ttl_gross']>-2000]
+
+
+    if type=='sum':
+        full_set_group = full_set.groupby(['DATE_OUT'])[['prt_gross','lab_gross','ttl_gross','ttl_sls']].agg('sum')
+        full_set_group = pd.DataFrame(full_set_group).reset_index()
+        return full_set_group
+
+    elif type=='detail':
+        return full_set
+
+    elif type=='count':
+
+        full_set_group = full_set[['DATE_OUT','RONUM']].drop_duplicates(cols='RONUM')
+        full_set_group = full_set_group.groupby('DATE_OUT')[['RONUM']].size()
+        full_set_group = pd.DataFrame(full_set_group).reset_index()
+        full_set_group = full_set_group.rename(columns={0:'RO_COUNT'})
+        return full_set_group
+
+def ARO(df_sum,df_count,key_col,sum_col):
+    """
+    assumes 2 dataframes with data aggregated by day.
+    key col is the column that should be used for the join
+    sum_col is the name of the column that be averaged
+    """
+    merged = pd.merge(df_sum,df_count,how='inner', left_on=key_col, right_on=key_col)
+    merged['ARO'] = merged[sum_col]/merged['RO_COUNT']
+    return merged[['DATE_OUT','ARO']]
+
+def smooth(df_data,num_deviations,col):
+    """
+    takes any dataframe and will drop outliers over the specified deviation from the mean.
+    """
+    df_data = df_data[np.abs(df_data[col]-df_data[col].mean())<=(num_deviations*df_data[col].std())]
+    return df_data
+
+def do_conversion(in_file, out_file):
+    ai = AdamImport()
+    ifile = ''.join([ADAM_PATH,in_file])
+    ofile = ''.join([ADAM_EXPORT_PATH,out_file])
+    out_type = 'csv'
+    print "ran conversion %s to %s" % (in_file, out_file)

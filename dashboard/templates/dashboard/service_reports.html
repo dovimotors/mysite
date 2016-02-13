@@ -1,0 +1,15 @@
+{% extends 'mysite/base.html' %}
+{% block content %}
+<form action="../../dashboard/service/" method="post">
+    <ul>
+        {% csrf_token %}
+        {{ form.as_ul }}
+    </ul>
+    <input type="submit" value="Run Report" name="submit">
+</form>
+<div>
+
+    {{ data | safe }}
+
+</div>
+{% endblock %}

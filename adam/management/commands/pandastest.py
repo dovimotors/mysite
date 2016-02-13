@@ -239,13 +239,13 @@ def smooth(df_data,num_deviations,col):
 
 
 
-startdate = '2006-01-01'
+startdate = '2011-05-01'
 enddate = '2015-12-31'
-total_gross = get_daily_service_summary('sum','all',startdate,enddate)
+total_gross = get_daily_service_summary('sum','C',startdate,enddate)
 
-startdate = '2007-01-01'
+startdate = '2011-01-01'
 enddate = '2015-12-31'
-total_count = get_daily_service_summary('count','all',startdate,enddate)
+total_count = get_daily_service_summary('count','C',startdate,enddate)
 
 """
 startdate = '2016-02-01'
