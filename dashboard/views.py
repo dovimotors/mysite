@@ -25,20 +25,24 @@ def service(request):
             start_date = form.cleaned_data['StartDate']
             end_date = form.cleaned_data['EndDate']
             if report == 'ARO':
-                total_gross = get_daily_service_summary('sum',form.cleaned_data['PaymentType'],start_date,end_date)
-                total_count = get_daily_service_summary('count',form.cleaned_data['PaymentType'],start_date,end_date)
-                aro = ARO(total_gross,total_count,'DATE_OUT','ttl_sls')
-                data = smooth(aro,form.cleaned_data['Smoothing'],'ARO')
+                total_gross = get_daily_service_summary('sum',form.cleaned_data['PaymentType'],False,start_date,end_date)
+                total_count = get_daily_service_summary('count',form.cleaned_data['PaymentType'],False,start_date,end_date)
+                data = ARO(total_gross,total_count,'DATE_OUT','ttl_sls')
+                #data = smooth(aro,form.cleaned_data['Smoothing'],'ARO')
             elif report == 'Traffic':
-                data = get_daily_service_summary('sum',form.cleaned_data['PaymentType'],start_date,end_date)
-                data = smooth(data,form.cleaned_data['Smoothing'],'RO_COUNT')
+                data = get_daily_service_summary('count',form.cleaned_data['PaymentType'],False,start_date,end_date)
+                #data = smooth(data,form.cleaned_data['Smoothing'],'RO_COUNT')
             elif report == 'Gross':
-                data = get_daily_service_summary('sum',form.cleaned_data['PaymentType'],start_date,end_date)
-                data = smooth(data,form.cleaned_data['Smoothing'],'ttl_gross')
+                data = get_daily_service_summary('sum',form.cleaned_data['PaymentType'],False,start_date,end_date)
+                #data = smooth(data,form.cleaned_data['Smoothing'],'ttl_gross')
 
+            if data.empty:
+                data = 'No Data'
+            else:
+                data = data.to_html(classes='pure-table', index=False)
             context = {
                 'form':form,
-                'data':data.to_html()
+                'data':data
             }
             return render(request, 'dashboard/service_reports.html', context)
 
@@ -49,20 +53,6 @@ def service(request):
         }
     return render(request, 'dashboard/service_reports.html', context)
 
-@login_required
-def service_aro(request,pmt_type,start_date,end_date):
-
-    return HttpResponse(html)
-
-@login_required
-def service_traffic(request,start_date,end_date):
-    html = 'service traffic place holder'
-    return HttpResponse(html)
-
-@login_required
-def service_gross(request,start_date,end_date):
-    html = 'service gross place holder'
-    return HttpResponse(html)
 
 def parts_reports(request):
     context = {}

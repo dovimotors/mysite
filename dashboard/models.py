@@ -173,18 +173,20 @@ def sv_Get_RO_Count(type):
     elif type == 'oldcount':
         return oldcount
 
-def get_daily_service_summary(type,pmttyp,start_date, end_date):
+def get_daily_service_summary(type,pmttyp,body,start_date, end_date):
     """
     type currently takes sum, detail, or count
     pmttype takes C, W, I, E or 'all' for everything
+    body takes true or false.  if true only return body shop ROs,
+    if false returns everything buy bodyshop ROs
     """
     arrofile = ''.join([ADAM_EXPORT_PATH,'arcrof.csv'])
     rofile = ''.join([ADAM_EXPORT_PATH,'rofile.csv'])
     arcomplain = ''.join([ADAM_EXPORT_PATH,'arcomp.csv'])
     complain = ''.join([ADAM_EXPORT_PATH, 'complain.csv'])
     rof_cols = ['RO_NUM','DATE_OUT']
-    comp_cols = ['RONUM','PAYMNTTYP','LSALES_AMT','LCOST_AMT','PSALES_AMT','PCOST_AMT','MSALES_AMT','MCOST_AMT']
-    full_cols = ['RONUM','DATE_OUT','PAYMNTTYP','LSALES_AMT','LCOST_AMT','PSALES_AMT','PCOST_AMT','MSALES_AMT','MCOST_AMT']
+    comp_cols = ['RONUM','PAYMNTTYP','PAYMNTDESC','LSALES_AMT','LCOST_AMT','PSALES_AMT','PCOST_AMT','MSALES_AMT','MCOST_AMT']
+    full_cols = ['RONUM','DATE_OUT','PAYMNTTYP','PAYMNTDESC','LSALES_AMT','LCOST_AMT','PSALES_AMT','PCOST_AMT','MSALES_AMT','MCOST_AMT']
 
 
     rof = pd.read_csv(rofile, usecols=rof_cols)
@@ -199,7 +201,6 @@ def get_daily_service_summary(type,pmttyp,start_date, end_date):
     arrof = arrof[arrof['DATE_OUT']<= end_date]
 
     rof = rof.append(arrof)
-    #rof = arrof
 
 
     comp = pd.read_csv(complain, usecols=comp_cols)
@@ -208,9 +209,14 @@ def get_daily_service_summary(type,pmttyp,start_date, end_date):
         comp = comp[comp['PAYMNTTYP'].str.startswith(pmttyp, na=False)]
         arcomp = arcomp[arcomp['PAYMNTTYP'].str.startswith(pmttyp, na=False)]
 
+    if body == True:
+        comp = comp[comp['PAYMNTDESC']=='Body Shop']
+        arcomp = arcomp[arcomp['PAYMNTDESC']=='Body Shop']
+    else:
+        comp = comp[comp['PAYMNTDESC']!='Body Shop']
+        arcomp = arcomp[arcomp['PAYMNTDESC']!='Body Shop']
 
     comp = comp.append(arcomp)
-    #comp = arcomp
 
 
     full_set = pd.merge(left=rof, right=comp, how='inner', left_on='RO_NUM', right_on='RONUM')
@@ -261,4 +267,5 @@ def do_conversion(in_file, out_file):
     ifile = ''.join([ADAM_PATH,in_file])
     ofile = ''.join([ADAM_EXPORT_PATH,out_file])
     out_type = 'csv'
+    ai.DBFConverter(ifile,ofile,out_type)
     print "ran conversion %s to %s" % (in_file, out_file)

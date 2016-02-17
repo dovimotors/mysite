@@ -20,15 +20,16 @@ def need_refresh(file_name):
     else:
         return False
 
-def do_conversion():
+def do_conversion(ifile,ofile):
     ai = AdamImport()
-    ifile = ''.join([ADAM_PATH,'\Sicar\Data\\rofile.dbf'])
-    ofile = ''.join([ADAM_EXPORT_PATH,'rofile.csv'])
+    ifile = ''.join([ADAM_PATH,ifile])
+    ofile = ''.join([ADAM_EXPORT_PATH,ofile])
     out_type = 'csv'
-    print "conversion completed"
 
-    if need_refresh(ofile):
-        ai.DBFConverter(ifile,ofile,out_type)
+
+    #if need_refresh(ofile):
+    ai.DBFConverter(ifile,ofile,out_type)
+    print "conversion completed"
 
 #do_conversion()
 
@@ -119,18 +120,20 @@ for dt in dates_to_check:
 
 yesterday = datetime.datetime.now().date() + datetime.timedelta(-1)
 
-def get_daily_service_summary(type,pmttyp,start_date, end_date):
+def get_daily_service_summary(type,pmttyp,body,start_date, end_date):
     """
     type currently takes sum, detail, or count
     pmttype takes C, W, I, E or 'all' for everything
+    body takes true or false.  if true only return body shop ROs,
+    if false returns everything buy bodyshop ROs
     """
     arrofile = ''.join([ADAM_EXPORT_PATH,'arcrof.csv'])
     rofile = ''.join([ADAM_EXPORT_PATH,'rofile.csv'])
     arcomplain = ''.join([ADAM_EXPORT_PATH,'arcomp.csv'])
     complain = ''.join([ADAM_EXPORT_PATH, 'complain.csv'])
     rof_cols = ['RO_NUM','DATE_OUT']
-    comp_cols = ['RONUM','PAYMNTTYP','LSALES_AMT','LCOST_AMT','PSALES_AMT','PCOST_AMT','MSALES_AMT','MCOST_AMT']
-    full_cols = ['RONUM','DATE_OUT','PAYMNTTYP','LSALES_AMT','LCOST_AMT','PSALES_AMT','PCOST_AMT','MSALES_AMT','MCOST_AMT']
+    comp_cols = ['RONUM','PAYMNTTYP','PAYMNTDESC','LSALES_AMT','LCOST_AMT','PSALES_AMT','PCOST_AMT','MSALES_AMT','MCOST_AMT']
+    full_cols = ['RONUM','DATE_OUT','PAYMNTTYP','PAYMNTDESC','LSALES_AMT','LCOST_AMT','PSALES_AMT','PCOST_AMT','MSALES_AMT','MCOST_AMT']
 
 
     rof = pd.read_csv(rofile, usecols=rof_cols)
@@ -144,7 +147,6 @@ def get_daily_service_summary(type,pmttyp,start_date, end_date):
     arrof = arrof[arrof['DATE_OUT']<= end_date]
 
     rof = rof.append(arrof)
-    #rof = arrof
 
 
     comp = pd.read_csv(complain, usecols=comp_cols)
@@ -153,9 +155,14 @@ def get_daily_service_summary(type,pmttyp,start_date, end_date):
         comp = comp[comp['PAYMNTTYP'].str.startswith(pmttyp, na=False)]
         arcomp = arcomp[arcomp['PAYMNTTYP'].str.startswith(pmttyp, na=False)]
 
+    if body == True:
+        comp = comp[comp['PAYMNTDESC']=='Body Shop']
+        arcomp = arcomp[arcomp['PAYMNTDESC']=='Body Shop']
+    else:
+        comp = comp[comp['PAYMNTDESC']!='Body Shop']
+        arcomp = arcomp[arcomp['PAYMNTDESC']!='Body Shop']
 
     comp = comp.append(arcomp)
-    #comp = arcomp
 
 
     full_set = pd.merge(left=rof, right=comp, how='inner', left_on='RO_NUM', right_on='RONUM')
@@ -235,53 +242,33 @@ def smooth(df_data,num_deviations,col):
 
     return full_set
 """
-
-
-
-
-startdate = '2011-05-01'
-enddate = '2015-12-31'
-total_gross = get_daily_service_summary('sum','C',startdate,enddate)
-
-startdate = '2011-01-01'
-enddate = '2015-12-31'
-total_count = get_daily_service_summary('count','C',startdate,enddate)
-
 """
+file_list = (('\Sicar\Data\\rofile.dbf','rofile.csv'),
+             ('\Sicar\Data\\arcrof.dbf','arcrof.csv'),
+             ('\Sicar\Data\\complain.dbf','complain.csv'),
+             ('\Sicar\Data\\arcomp.dbf','arcomp.csv'),
+         )
+for x,y in file_list:
+    do_conversion(x,y)
+"""
+
+startdate = '2015-02-01'
+enddate = '2015-02-16'
+prior_year = get_daily_service_summary('sum','all',True,startdate,enddate)
+print prior_year
+print prior_year['ttl_gross'].sum()
+
+
 startdate = '2016-02-01'
-enddate = '2016-02-10'
-current_year = get_daily_service_summary('sum','all',startdate,enddate)
-"""
+enddate = '2016-02-16'
+current_year = get_daily_service_summary('sum','all',True,startdate,enddate)
 
-
-
-aro = ARO(total_gross,total_count,'DATE_OUT','ttl_sls')
-aro = smooth(aro,3,'ARO')
-
-
-print aro['ARO'].describe()
-
+print current_year
+print current_year['ttl_gross'].sum()
 
 """
-f= 'c:\Users\jesse\Desktop\output.csv'
-df = pd.read_csv(f)
-
-
-
-s = pd.Series(df.ttl_gross.values, index=df.DATE_OUT)
-idx = pd.date_range('01-01-2005', '12-31-2017')
-s.index = pd.DatetimeIndex(s.index)
-s = s.reindex(idx, fill_value=0)
-
-df = pd.DataFrame(s)
-
-output_file = 'c:\users\jesse\desktop\output_forecast.csv'
-with open(output_file, 'w') as f:
-    df.to_csv(f)
-
-"""
-
-
 output_file = 'c:\users\jesse\desktop\output.csv'
 with open(output_file, 'w') as f:
-    aro.to_csv(f)
+    current_year.to_csv(f)
+"""
+
