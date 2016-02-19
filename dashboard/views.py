@@ -18,13 +18,16 @@ def index(request):
 
 @login_required
 def service(request):
+    #branch for GET vs. POST
     if request.method == 'POST':
         form = ServiceReports(request.POST)
         if form.is_valid():
+            #extract the variables from the POST data
             report = form.cleaned_data['Report']
             start_date = form.cleaned_data['StartDate']
             end_date = form.cleaned_data['EndDate']
             body_shop = form.cleaned_data['BodyShop']
+            export = form.cleaned_data['Export']
             if report == 'ARO':
                 total_gross = get_daily_service_summary('sum',form.cleaned_data['PaymentType'],body_shop,start_date,end_date)
                 total_count = get_daily_service_summary('count',form.cleaned_data['PaymentType'],body_shop,start_date,end_date)
@@ -37,23 +40,41 @@ def service(request):
                 data = get_daily_service_summary('sum',form.cleaned_data['PaymentType'],body_shop,start_date,end_date)
                 data = smooth(data,form.cleaned_data['Smoothing'],'ttl_gross')
 
+            #if an empty dataframe is returned show "no data"
             if data.empty:
                 data = 'No Data'
             else:
-                data = data.to_html(classes='pure-table', index=False, float_format=lambda x: '%10.2f' % x)
+                html_data = data.to_html(classes='pure-table', index=False, float_format=lambda x: '%10.2f' % x)
             context = {
                 'form':form,
-                'data':data
+                'data':html_data
             }
-            return render(request, 'dashboard/service_reports.html', context)
-        """
+
+            #If export is checked read the dataframe to a stringIO object
+            if export:
+                import StringIO
+                buf = StringIO.StringIO()
+
+                #read the dataframe to the IO buffer, then store the results in a variable.
+                data.to_csv(buf)
+                datafile = buf.getvalue()
+
+                # generate the response
+                response = HttpResponse(datafile, content_type='text/csv')
+                response['Content-Disposition'] = 'attachment; filename=%s.csv' % report
+                return response
+            else:
+                return render(request, 'dashboard/service_reports.html', context)
+
+        #If the form data isn't valid, return an error
         else:
             context = {
                 'form': form,
                 'data': 'There was a problem with the form data'
             }
             return render(request, 'dashboard/service_reports.html', context)
-        """
+
+    #if there is no post data then show the blank form
     else:
         form = ServiceReports()
         context = {
@@ -78,3 +99,4 @@ def all_metrics(request):
     metrics = DailyMetrics.objects.all()[:45]
     context = {'daily_metrics': metrics}
     return render(request, 'dashboard/all_metric_data.html',context)
+

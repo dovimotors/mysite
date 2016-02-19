@@ -34,6 +34,7 @@ class ServiceReports(forms.Form):
     EndDate = forms.DateTimeField(label='End Date',initial=todays_date)
     PaymentType = forms.ChoiceField(choices=PAYMENT_TYPE_CHOICES)
     Smoothing = forms.IntegerField(max_value=20,min_value=1,initial=20)
-    BodyShop = forms.BooleanField(help_text='Check the box to show report using body shop data',initial=False,required=False)
+    BodyShop = forms.BooleanField(help_text='Check to show report using body shop data',initial=False,required=False)
+    Export = forms.BooleanField(help_text='Check to output to csv rather than on screen',initial=False,required=False)
 
 
