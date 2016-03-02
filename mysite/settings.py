@@ -50,7 +50,6 @@ INSTALLED_APPS = (
     'adam',
     'dashboard',
     'django_windows_tools',
-    'chartit'
 )
 
 MIDDLEWARE_CLASSES = (
