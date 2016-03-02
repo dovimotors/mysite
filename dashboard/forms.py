@@ -22,16 +22,25 @@ class ServiceReports(forms.Form):
         (Traffic, 'Count of ROs by day'),
         (Gross, 'Average gross profit by day'),
     )
+	
+    def get_todays_date():
+        todays_date = datetime.datetime.today()
+        todays_date = todays_date.strftime('%Y-%m-%d')
+        return todays_date
 
-    todays_date = datetime.datetime.today()
-    start_date = todays_date + datetime.timedelta(-10)
-    todays_date = todays_date.strftime('%Y-%m-%d')
-    start_date = start_date.strftime('%Y-%m-%d')
+    def get_start_date(days_ago):
+        start_date = datetime.datetime.today() + datetime.timedelta(days_ago)
+        start_date = start_date.strftime('%Y-%m-%d')
+        return start_date
+	
+    
+    
+    
 
 
     Report = forms.ChoiceField(choices=REPORT_CHOICES)
-    StartDate = forms.DateTimeField(label='Start Date',initial=start_date)
-    EndDate = forms.DateTimeField(label='End Date',initial=todays_date)
+    StartDate = forms.DateTimeField(label='Start Date',initial=get_start_date(-10))
+    EndDate = forms.DateTimeField(label='End Date',initial=get_todays_date())
     PaymentType = forms.ChoiceField(choices=PAYMENT_TYPE_CHOICES)
     Smoothing = forms.IntegerField(max_value=20,min_value=1,initial=20)
     BodyShop = forms.BooleanField(help_text='Check to show report using body shop data',initial=False,required=False)

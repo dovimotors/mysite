@@ -49,7 +49,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'adam',
     'dashboard',
-    'django_windows_tools'
+    'django_windows_tools',
+    'chartit'
 )
 
 MIDDLEWARE_CLASSES = (

@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, render_to_response
 from django.http import HttpResponseRedirect
 from .models import PartsInv, ServiceRO, pa_Get_Parts_Count, DailyMetrics, ARO, smooth, get_daily_service_summary
 import pandas as pd
@@ -96,7 +96,44 @@ def parts_detail(request,start_days,end_days,field,cost=1500):
 
 @login_required
 def all_metrics(request):
-    metrics = DailyMetrics.objects.all()[:45]
+    metrics = DailyMetrics.objects.all().order_by('-id')[:45]
     context = {'daily_metrics': metrics}
     return render(request, 'dashboard/all_metric_data.html',context)
 
+from chartit import DataPool, Chart
+
+def weather_chart_view(request):
+    #Step 1: Create a DataPool with the data we want to retrieve.
+    weatherdata = \
+        DataPool(
+           series=
+            [{'options': {
+               'source': DailyMetrics.objects.all()},
+              'terms': [
+                'statdate',
+                'sv_old_ro_count',
+                'sv_ro_count']}
+             ])
+
+    #Step 2: Create the Chart object
+    cht = Chart(
+            datasource = weatherdata,
+            series_options =
+              [{'options':{
+                  'type': 'line',
+                  'stacking': False},
+                'terms':{
+                  'statdate': [
+                    'sv_old_ro_count',
+                    'sv_ro_count']
+                  }}],
+            chart_options =
+              {'title': {
+                   'text': 'Weather Data of Boston and Houston'},
+               'xAxis': {
+                    'title': {
+                       'text': 'Month number'}}})
+    context = {'weatherchart': cht}
+
+    #Step 3: Send the chart object to the template.
+    return render(request,'dashboard/chart_test.html',context)
