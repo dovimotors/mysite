@@ -269,3 +269,26 @@ def do_conversion(in_file, out_file):
     out_type = 'csv'
     ai.DBFConverter(ifile,ofile,out_type)
     print "ran conversion %s to %s" % (in_file, out_file)
+    
+def get_service_parts_detail(start_date,end_date):
+    
+    arrofile = ''.join([ADAM_EXPORT_PATH,'arcrof.csv'])
+    siarctikfile = ''.join([ADAM_EXPORT_PATH, 'siarctik.csv'])
+    arrof_cols = ['RO_NUM','DATE_OUT']
+    siarctik_cols = ['RONUM','OPERATION','PREFIX','PARTNO','SUFFIX']
+    full_cols = ['RONUM','DATE_OUT','OPERATION','PREFIX','PARTNO','SUFFIX']
+
+
+    arrof = pd.read_csv(arrofile, usecols=arrof_cols)
+    arrof['DATE_OUT'] = pd.to_datetime(arrof['DATE_OUT'])
+    arrof = arrof[arrof['DATE_OUT']>= start_date]
+    arrof = arrof[arrof['DATE_OUT']<= end_date] 
+    
+    siarctik = pd.read_csv(siarctikfile, usecols=siarctik_cols)
+
+    full_set = pd.merge(left=arrof, right=siarctik, how='inner', left_on='RO_NUM', right_on='RONUM')
+    #full_set = full_set[full_set['PREFIX'].dropna()]
+    full_set = full_set[full_set['PREFIX'].str.startswith('BX',na=False)]
+    full_set = full_set[full_cols]
+    
+    return full_set

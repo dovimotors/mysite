@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 import sendgrid
-from dashboard.models import pa_Get_Parts_Count
+from dashboard.models import pa_Get_Parts_Count, get_service_parts_detail
 from adam.models import SGFields
 from django.template.loader import render_to_string
 import datetime, time
@@ -75,5 +75,17 @@ class Command(BaseCommand):
 
             html = part_list.to_html()
             subject = "Get rid of these pronto!  Parts 45 to 50 days old"
+            email_addresses = ["jesse@dovimotors.com","gordy@dovimotors.com","robin@dovimotors.com"]
+            send_email(html,subject,email_addresses)
+
+        elif email_type == "battery":
+            startdate = datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(-21),'%Y-%m-%d')
+            enddate = datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(-14), '%Y-%m-%d')
+            #startdate = '2016-01-01'
+            #enddate = '2016-01-31'
+            ro_list = get_service_parts_detail(startdate,enddate)
+            ro_list.sort('DATE_OUT')
+            html = ro_list.to_html()
+            subject = "Battery Cores from %s to %s" % (startdate,enddate)
             email_addresses = ["jesse@dovimotors.com","gordy@dovimotors.com","robin@dovimotors.com"]
             send_email(html,subject,email_addresses)

@@ -1,11 +1,11 @@
 from django.shortcuts import render, HttpResponse, render_to_response
 from django.http import HttpResponseRedirect
-from .models import PartsInv, ServiceRO, pa_Get_Parts_Count, DailyMetrics, ARO, smooth, get_daily_service_summary
+from .models import PartsInv, ServiceRO, pa_Get_Parts_Count, DailyMetrics, ARO, smooth, get_daily_service_summary, get_service_parts_detail
 import pandas as pd
 from dbftopandas import AdamImport
 import datetime
 from django.contrib.auth.decorators import login_required
-from .forms import ServiceReports
+from .forms import ServiceReports, PartsCoreReport
 
 @login_required
 def index(request):
@@ -42,7 +42,7 @@ def service(request):
 
             #if an empty dataframe is returned show "no data"
             if data.empty:
-                data = 'No Data'
+                html_data = 'No Data'
             else:
                 html_data = data.to_html(classes='pure-table', index=False, float_format=lambda x: '%10.2f' % x)
             context = {
@@ -84,7 +84,38 @@ def service(request):
 
 
 def parts_reports(request):
-    context = {}
+    #branch for GET vs. POST
+    if request.method == 'POST':
+        form = PartsCoreReport(request.POST)
+        if form.is_valid():
+            #extract the variables from the POST data
+            startdate = form.cleaned_data['StartDate']
+            enddate = form.cleaned_data['EndDate']
+            ro_list = get_service_parts_detail(startdate,enddate)
+            data = ro_list.sort('DATE_OUT')
+            #if the dataframe is empty just return a no data message
+            if data.empty:
+                html_data = 'No Data'
+            else:
+                html_data = data.to_html(classes='pure-table', index=False, float_format=lambda x: '%10.2f' % x)
+            context = {
+                'form':form,
+                'data':html_data
+                }
+        #If the form data isn't valid, return an error
+        else:
+            context = {
+                'form': form,
+                'data': 'There was a problem with the form data'
+            }
+            return render(request, 'dashboard/service_reports.html', context)
+
+    #if there is no post data then show the blank form
+    else:
+        form = PartsCoreReport()
+        context = {
+            'form':form,
+            }
     return render(request, 'dashboard/parts_reports.html', context)
 
 def parts_detail(request,start_days,end_days,field,cost=1500):
