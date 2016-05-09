@@ -129,9 +129,13 @@ def pa_Get_Parts_Count(type, start_days, end_days, field, cost=1500):
     #if the type is detail prepare the data for detailed export
     elif type == "detail":
         #create a full part number field to filter on
+        inv.SUFFIX = inv.SUFFIX.fillna('')
         inv['FULLPN'] = inv['PREFIX'] + inv['PARTNO'] + inv['SUFFIX']
+        #print inv['PREFIX'],inv['PARTNO'],inv['SUFFIX'],inv['FULLPN']
         #create the filter to exclude stock parts
         invx = inv['FULLPN'].isin(stock['Alternate'])
+        #print stock['Alternate'].loc[20:30]
+        print invx
         #create a new inv dataframe with out the stock parts
         inv = inv[~invx]
         inv_detail = inv[['PREFIX','PARTNO','SUFFIX','DESC','ONHAND','DATEPURC','DATESOLD','COST','ext', 'LOCATION']]
