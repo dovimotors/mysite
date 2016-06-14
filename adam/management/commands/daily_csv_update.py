@@ -14,7 +14,8 @@ class Command(BaseCommand):
                      ('\Sicar\Data\\complain.dbf','complain.csv'),
                      ('\Sicar\Data\\arcomp.dbf','arcomp.csv'),
                      ('\Sicar\Data\\siarctik.dbf','siarctik.csv'),
-                     ('\Sicar\Data\\HISTORY.dbf','HISTORY.csv')
+                     ('\Sicar\Data\\HISTORY.dbf','HISTORY.csv'),
+                     ('\Sicar\Data\\vidfile.dbf','vidfile.csv')
                  )
         for x,y in file_list:
             do_conversion(x,y)
