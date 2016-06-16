@@ -46,5 +46,5 @@ class PartsCoreReport(forms.Form):
     EndDate = forms.DateTimeField(label='End Date',initial=get_todays_date())
 
 class DoviMotorsWebSearch(forms.Form):
-    StockNumber = forms.CharField(max_length=7,min_length=3,required=True, strip=True)
+    StockNumber = forms.CharField(max_length=7,min_length=3,required=True)
 
