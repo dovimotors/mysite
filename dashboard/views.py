@@ -5,7 +5,7 @@ import pandas as pd
 from dbftopandas import AdamImport
 import datetime
 from django.contrib.auth.decorators import login_required
-from .forms import ServiceReports, PartsCoreReport
+from .forms import ServiceReports, PartsCoreReport, DoviMotorsWebSearch
 
 @login_required
 def index(request):
@@ -130,3 +130,33 @@ def all_metrics(request):
     metrics = DailyMetrics.objects.all().order_by('-id')[:45]
     context = {'daily_metrics': metrics}
     return render(request, 'dashboard/all_metric_data.html',context)
+
+def dovimotors(request):
+    #branch for GET vs. POST
+    if request.method == 'POST':
+        form = DoviMotorsWebSearch(request.POST)
+        if form.is_valid():
+            #extract the variables from the POST data
+            stock_num = form.cleaned_data['StockNumber']
+            url = 'http://www.dovimotors.com/all-inventory/index.htm?search=' + stock_num
+            context = {'str_url':url}
+            return render(request, 'mysite/redirect.html',context)
+        #If the form data isn't valid, return an error
+        else:
+            context = {
+                'form': form,
+                'data': 'There was a problem with the form data'
+            }
+            return render(request, 'dashboard/dovimotors.html', context)
+
+    #if there is no post data then show the blank form
+    else:
+        form = DoviMotorsWebSearch()
+        context = {
+            'form':form,
+            }
+    return render(request, 'dashboard/dovimotors.html',context)
+
+def redirect(request,stock_number):
+
+    return render_to_response('mysite/redirect.html')

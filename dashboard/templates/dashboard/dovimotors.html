@@ -1,0 +1,33 @@
+{% extends 'mysite/dovimotors_base2.html' %}
+{% block content %}
+
+    <div class="splash">
+        <p class="splash-subhead">
+            Enter the stock number for the vehicle you are interested in.
+        </p>
+        <form class="pure-form" action="../../dashboard/dovimotors/" method="post" id="stocknumber">
+        {% csrf_token %}
+        {{ form.StockNumber.errors }}<br>
+        {{ form.StockNumber }}<p>
+        <input class="pure-button pure-button-primary" type="submit" value="Get Dovi's Price" name="submit">
+        </form>
+        <br>
+        <br>
+
+
+        <p class="splash-subhead">
+        <hr>
+            <h3>Check out our inventory online!</h3>
+
+            <a class="pure-button pure-button-primary" href="" target="blank">View New Inventory</a> |
+            <a class="pure-button pure-button-primary" href="" target="blank">View Used Inventory</a>
+        <hr>
+        </p>
+    </div>
+
+<script>
+    document.getElementById(id_StockNumber.id).focus();
+    document.getElementById(id_StockNumber.id).select();
+
+</script>
+{% endblock %}
