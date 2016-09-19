@@ -285,7 +285,7 @@ def get_service_parts_detail(start_date,end_date):
     arrofile = ''.join([ADAM_EXPORT_PATH,'arcrof.csv'])
     siarctikfile = ''.join([ADAM_EXPORT_PATH, 'siarctik.csv'])
     arrof_cols = ['RO_NUM','DATE_OUT']
-    siarctik_cols = ['RONUM','OPERATION','PREFIX','PARTNO','SUFFIX']
+    siarctik_cols = ['RONUM','OPERATION','PREFIX','PARTNO','SUFFIX','QTY']
     full_cols = ['RONUM','DATE_OUT','OPERATION','PREFIX','PARTNO','SUFFIX']
 
 
@@ -295,10 +295,11 @@ def get_service_parts_detail(start_date,end_date):
     arrof = arrof[arrof['DATE_OUT']<= end_date] 
     
     siarctik = pd.read_csv(siarctikfile, usecols=siarctik_cols)
-
+    pdb.set_trace()
     full_set = pd.merge(left=arrof, right=siarctik, how='inner', left_on='RO_NUM', right_on='RONUM')
     #full_set = full_set[full_set['PREFIX'].dropna()]
     full_set = full_set[full_set['PREFIX'].str.startswith('BX',na=False)]
+    full_set = full_set[full_set['QTY']>0]
     full_set = full_set[full_cols]
     
     return full_set

@@ -79,10 +79,10 @@ class Command(BaseCommand):
             send_email(html,subject,email_addresses)
 
         elif email_type == "battery":
-            startdate = datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(-21),'%Y-%m-%d')
-            enddate = datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(-14), '%Y-%m-%d')
-            #startdate = '2016-01-01'
-            #enddate = '2016-01-31'
+            #startdate = datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(-21),'%Y-%m-%d')
+            #enddate = datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(-14), '%Y-%m-%d')
+            startdate = '2016-08-15'
+            enddate = '2016-08-31'
             ro_list = get_service_parts_detail(startdate,enddate)
             ro_list.sort('DATE_OUT')
             html = ro_list.to_html()
