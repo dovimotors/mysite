@@ -5,6 +5,7 @@ import numpy as np
 import datetime, time
 import os
 from mysite.settings import ADAM_PATH, ADAM_EXPORT_PATH
+import pdb
 
 # Create your models here.
 
@@ -92,7 +93,11 @@ def pa_Get_Parts_Count(type, start_days, end_days, field, cost=1500):
 
     stock = pd.read_csv(stock_file)
     stock.columns = ['Ford','Alternate','QOH','Days1','Days2']
+    pdb.set_trace()
+    ford = stock[['Ford']].dropna()
+    ford['Alternate'] = ford['Ford']
     stock = stock[['Alternate']].dropna()
+    stock = stock.append(ford['Alternate'],ignore_index = True)
 
     #pull the latest parts inventory from ADAM
     ai = AdamImport()
@@ -128,6 +133,7 @@ def pa_Get_Parts_Count(type, start_days, end_days, field, cost=1500):
         return inv_sum
     #if the type is detail prepare the data for detailed export
     elif type == "detail":
+
         #create a full part number field to filter on
         inv.SUFFIX = inv.SUFFIX.fillna('')
         inv['FULLPN'] = inv['PREFIX'] + inv['PARTNO'] + inv['SUFFIX']
