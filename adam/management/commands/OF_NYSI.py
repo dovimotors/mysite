@@ -20,8 +20,8 @@ class Command(BaseCommand):
         vidfile['DELDATE'] = pd.to_datetime(vidfile['DELDATE'])
 
         #RM101
-        RM101_start_date = '2016-04-30'
-        RM101_end_date = '2016-06-01'
+        RM101_start_date = '2016-05-31'
+        RM101_end_date = '2016-07-01'
         RM101 = history[history['DATE']> RM101_start_date]
         RM101 = RM101[RM101['DATE']< RM101_end_date]
         RM101 = RM101[RM101['KIT']=='101']
@@ -30,8 +30,8 @@ class Command(BaseCommand):
         RM101 = RM101[['VEHICLE','TYPE']].drop_duplicates()
         
         #WRKS
-        WRKS_start_date = '2016-04-30'
-        WRKS_end_date = '2016-06-01'
+        WRKS_start_date = '2016-05-31'
+        WRKS_end_date = '2016-07-01'
         WRKS = history[history['DATE']> WRKS_start_date]
         WRKS = WRKS[WRKS['DATE']< WRKS_end_date]
         WRKS = WRKS[WRKS['KIT']=='WRKS']
@@ -41,8 +41,8 @@ class Command(BaseCommand):
         
 
         #101D
-        RM101D_start_date = '2016-02-29'
-        RM101D_end_date = '2016-04-01'
+        RM101D_start_date = '2016-03-31'
+        RM101D_end_date = '2016-05-01'
         RM101D = history[history['DATE']> RM101D_start_date]
         RM101D = RM101D[RM101D['DATE']< RM101D_end_date]
         RM101D = RM101D[RM101D['KIT']=='101D']
@@ -51,8 +51,8 @@ class Command(BaseCommand):
         RM101D = RM101D[['VEHICLE','TYPE']].drop_duplicates()
 
         #RM103
-        RM103_start_date = '2015-08-31'
-        RM103_end_date = '2015-10-01'
+        RM103_start_date = '2015-09-30'
+        RM103_end_date = '2015-11-01'
         RM103 = history[history['DATE']> RM103_start_date]
         RM103 = RM103[RM103['DATE']< RM103_end_date]
         RM103 = RM103[RM103['KIT']=='103']
@@ -61,8 +61,8 @@ class Command(BaseCommand):
         RM103 = RM103[['VEHICLE','TYPE']].drop_duplicates()
 
         #OF Delivery Date
-        OF_del_start_date = '2016-04-30'
-        OF_del_end_date = '2016-06-01'
+        OF_del_start_date = '2016-05-31'
+        OF_del_end_date = '2016-07-01'
         OFDD = vidfile[vidfile['DELDATE']>OF_del_start_date]
         OFDD = OFDD[OFDD['DELDATE']<OF_del_end_date]
         OFDD['VEHICLE'] = OFDD['VID']
@@ -71,8 +71,8 @@ class Command(BaseCommand):
 
 
         #NYSI Delivery Date
-        NYSI_del_start_date = '2015-08-31'
-        NYSI_del_end_date = '2015-10-01'
+        NYSI_del_start_date = '2015-09-30'
+        NYSI_del_end_date = '2015-11-01'
         NYSI = vidfile[vidfile['DELDATE']>NYSI_del_start_date]
         NYSI = NYSI[NYSI['DELDATE']<NYSI_del_end_date]
         NYSI['VEHICLE'] = NYSI['VID']

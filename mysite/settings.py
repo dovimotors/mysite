@@ -31,14 +31,14 @@ DJANGO_ENV = os.environ['DJANGO_ENV']
 
 if DJANGO_ENV == 'dev':
 
-    ADAM_PATH = 'f:\\adamexports\\adamcache\\'
-    ADAM_EXPORT_PATH = 'f:\\adamexports\\csvfiles\\'
-    BASE_SHARED_PATH = 'f:\\SHARED\\'
+    ADAM_PATH = 'p:\\adamexports\\adamcache\\'
+    ADAM_EXPORT_PATH = 'p:\\adamexports\\csvfiles\\'
+    BASE_SHARED_PATH = 'p:\\SHARED\\'
 
 else:
-    ADAM_PATH = 'c:\\data\\adamexports\\adamcache\\'
-    ADAM_EXPORT_PATH = 'c:\\data\\adamexports\\csvfiles\\'
-    BASE_SHARED_PATH = 'c:\\DATA\\SHARED\\'
+    ADAM_PATH = 'c:\\data2\\adamexports\\adamcache\\'
+    ADAM_EXPORT_PATH = 'c:\\data2\\adamexports\\csvfiles\\'
+    BASE_SHARED_PATH = 'c:\\DATA2\\SHARED\\'
 
 # Application definition
 
