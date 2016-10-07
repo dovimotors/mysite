@@ -93,7 +93,6 @@ def pa_Get_Parts_Count(type, start_days, end_days, field, cost=1500):
 
     stock = pd.read_csv(stock_file)
     stock.columns = ['Ford','Alternate','QOH','Days1','Days2']
-    pdb.set_trace()
     ford = stock[['Ford']].dropna()
     ford['Alternate'] = ford['Ford']
     stock = stock[['Alternate']].dropna()
@@ -295,7 +294,6 @@ def get_service_parts_detail(start_date,end_date):
     arrof = arrof[arrof['DATE_OUT']<= end_date] 
     
     siarctik = pd.read_csv(siarctikfile, usecols=siarctik_cols)
-    pdb.set_trace()
     full_set = pd.merge(left=arrof, right=siarctik, how='inner', left_on='RO_NUM', right_on='RONUM')
     #full_set = full_set[full_set['PREFIX'].dropna()]
     full_set = full_set[full_set['PREFIX'].str.startswith('BX',na=False)]
